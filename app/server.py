@@ -25,7 +25,7 @@ from urllib.parse import parse_qs, quote, unquote, urlsplit
 ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get('DATA_DIR', ROOT / '.data'))
 APP_ID = 'wizard-simplefin'
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 PREFIX = '/' + APP_ID
 PORT = os.environ.get('PORT', '8808')
 SYNC_HOURS = float(os.environ.get('SIMPLEFIN_SYNC_HOURS', '6'))
@@ -156,7 +156,7 @@ def claim(body):
         raise Problem(502, f'SimpleFIN did not accept the token (answered {code}). Create a new token and try again.')
     _write_secret('access_url', access)
     cfg = _config()
-    cfg.update(connected=_now(), last_sync=None, error=None, history_done=False)
+    cfg.update(connected=_now(), last_sync=None, error=None, history_done=False, requests=[])
     _save_config(cfg)
     start_sync()
     return status()
@@ -173,7 +173,7 @@ def disconnect():
         finally:
             c.close()
         cfg = _config()
-        for k in ('connected', 'last_sync', 'error', 'history_done'):
+        for k in ('connected', 'last_sync', 'error', 'history_done', 'requests', 'last_try'):
             cfg.pop(k, None)
         _save_config(cfg)
     return status()
@@ -544,6 +544,12 @@ if __name__ == '__main__':
             os.chmod(f, 0o700 if f.is_dir() else 0o600)
         except OSError:
             pass
+    _c = _config()
+    if _c.get('connected') and not _c.get('last_sync'):
+        _since = dt.datetime.strptime(_c['connected'], '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=dt.timezone.utc).timestamp()
+        _c['requests'] = [t for t in _c.get('requests', []) if t >= _since]
+        _c.pop('last_try', None)
+        _save_config(_c)
     db().close()
     threading.Thread(target=_scheduler, daemon=True).start()
     ThreadingHTTPServer((os.environ.get('BIND', '0.0.0.0'), int(PORT)), Handler).serve_forever()
