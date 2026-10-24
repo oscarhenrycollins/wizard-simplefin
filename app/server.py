@@ -25,11 +25,11 @@ from urllib.parse import parse_qs, quote, unquote, urlsplit
 ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get('DATA_DIR', ROOT / '.data'))
 APP_ID = 'wizard-simplefin'
-VERSION = '0.1.0'
+VERSION = '0.1.1'
 PREFIX = '/' + APP_ID
 PORT = os.environ.get('PORT', '8808')
 SYNC_HOURS = float(os.environ.get('SIMPLEFIN_SYNC_HOURS', '6'))
-WINDOW_DAYS = 45  # SimpleFIN caps a request at 90 days and recommends 45
+WINDOW_DAYS = 44  # SimpleFIN caps a request at 90 days and recommends at most 45
 HISTORY_WINDOWS = int(os.environ.get('SIMPLEFIN_HISTORY_WINDOWS', '8'))  # x 45 days on first sync (about a year)
 DAILY_LIMIT = 16  # SimpleFIN expects <= 24 requests a day and disables tokens that keep exceeding it
 TIMEOUT = 120     # the Bridge can take a minute to answer while it refreshes banks
@@ -218,6 +218,8 @@ def _store(c, d):
     general = []
     for e in errs:
         msg = _clean(e.get('msg') or e.get('message') or e if isinstance(e, (dict, str)) else '')
+        if re.search(r'date range', msg, re.I):  # advice about our own request size, not a bank problem
+            continue
         (conn_err.setdefault(e.get('conn_id'), []) if isinstance(e, dict) and e.get('conn_id') else general).append(msg)
     for cn in d.get('connections') or []:
         c.execute('INSERT OR REPLACE INTO connections VALUES (?,?,?,?,?)', (
