@@ -14,7 +14,7 @@ html[data-color-scheme="light"] .sf-app { --base: #f7f6fb; --green: #18834f; --a
 .is-now .sf-n { background: var(--accent); color: var(--on-accent); }
 .is-done .sf-n { background: var(--green); color: #0c2a1b; font-size: 0; }
 .is-done .sf-n::after { content: "✓"; font-size: 15px; }
-.sf-step:not(.is-now):not(.is-done) .sf-step-h { opacity: .6; }
+.sf-step:not(.is-now):not(.is-done) .sf-step-h { color: var(--ink-2); }
 .sf-step-b { display: none; flex-direction: column; gap: 10px; padding: 0 14px 16px 54px; }
 .is-now .sf-step-b { display: flex; }
 .sf-step-b p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
