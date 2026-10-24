@@ -25,7 +25,7 @@ from urllib.parse import parse_qs, quote, unquote, urlsplit
 ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get('DATA_DIR', ROOT / '.data'))
 APP_ID = 'wizard-simplefin'
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 PREFIX = '/' + APP_ID
 PORT = os.environ.get('PORT', '8808')
 SYNC_HOURS = float(os.environ.get('SIMPLEFIN_SYNC_HOURS', '6'))
@@ -260,8 +260,19 @@ def sync():
         now = time.time()
         # First sync: walk back in 45-day windows (SimpleFIN's recommended range). Later: the last 30 days.
         w = WINDOW_DAYS * 86400
-        windows = [(now - w * (i + 1), now - w * i if i else None) for i in range(HISTORY_WINDOWS)] \
-            if not cfg.get('history_done') else [(now - 30 * 86400, None)]
+        with LOCK:
+            c = db()
+            try:
+                known = {r[0] for r in c.execute('SELECT id FROM accounts')}
+                # Accounts whose history was never pulled in full (banks linked after the first sync).
+                shallow = {r[0] for r in c.execute("SELECT account FROM transactions GROUP BY account HAVING MIN(date) >= ?",
+                           (dt.date.fromtimestamp(now - 35 * 86400).isoformat(),))}
+            finally:
+                c.close()
+        backfill = set(cfg.get('backfilled') or [])
+        need = (shallow - backfill) if cfg.get('history_done') else set()
+        full = not cfg.get('history_done') or bool(need)
+        windows = [(now - w * (i + 1), now - w * i if i else None) for i in range(HISTORY_WINDOWS)] if full else [(now - 30 * 86400, None)]
         notes = []
         for i, (start, end) in enumerate(windows):
             d = _fetch(start, end)
@@ -273,10 +284,13 @@ def sync():
                 finally:
                     c.close()
             notes += general
-            if i and n == 0:  # bank keeps no older history
+            if i and n == 0:  # banks keep no older history
                 break
+            if _config().get('requests') and len(_config()['requests']) >= DAILY_LIMIT - 1:
+                break  # leave room for tomorrow's refresh; the rest backfills next time
         cfg = _config()
-        cfg.update(last_sync=_now(), error=' '.join(dict.fromkeys(notes))[:400] or None, history_done=True)
+        cfg.update(last_sync=_now(), error=' '.join(dict.fromkeys(notes))[:400] or None, history_done=True,
+                   backfilled=sorted(backfill | need | (known if full else set())))
         _save_config(cfg)
     except Problem as e:
         cfg = _config()

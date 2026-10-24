@@ -4,7 +4,7 @@ id: wizard-simplefin
 name: SimpleFIN
 type: external
 category: system
-version: 0.1.3
+version: 0.1.4
 summary: Connect your banks through SimpleFIN. Your apps get read-only accounts, balances and transactions.
 tags: [finance]
 license: GPL-3.0-only
