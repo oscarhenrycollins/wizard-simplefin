@@ -1,0 +1,14 @@
+{
+  "openapi": "3.0.3",
+  "info": {"title": "SimpleFIN", "version": "0.1.0"},
+  "paths": {
+    "/healthz": {"get": {"summary": "Health", "responses": {"200": {"description": "{ok,app,version,status,banks}"}}}},
+    "/api/status": {"get": {"summary": "Connection status, banks and accounts; never returns the access address", "responses": {"200": {"description": "{contract,status,syncing,banks,transactions,last_sync,error}"}}}},
+    "/api/accounts": {"get": {"summary": "Linked accounts with balances", "responses": {"200": {"description": "{accounts}"}}}},
+    "/api/transactions": {"get": {"summary": "Search transactions: from, to, account, search, min_amount, max_amount, status, limit", "responses": {"200": {"description": "{count,transactions}"}}}},
+    "/api/connect": {"post": {"summary": "Claim a SimpleFIN setup token ({token}) and start the first sync", "responses": {"200": {"description": "status"}, "400": {"description": "Not a setup token"}, "403": {"description": "Token already used"}}}},
+    "/api/disconnect": {"post": {"summary": "Forget the access address and delete synced data", "responses": {"200": {"description": "status"}}}},
+    "/api/sync": {"post": {"summary": "Start a sync in the background", "responses": {"202": {"description": "status"}}}},
+    "/mcp": {"post": {"summary": "MCP JSON-RPC (box-only): bank_status, bank_accounts, bank_transactions, bank_sync", "responses": {"200": {"description": "JSON-RPC result"}}}}
+  }
+}

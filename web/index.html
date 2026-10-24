@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en" data-app="wizard-simplefin">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <title>SimpleFIN</title>
+  <script src="boot.js"></script>
+  <link rel="stylesheet" href="wizard-ui.css">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="theme-client.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="wz-app sf-app">
+    <main class="wz-scroll sf-scroll">
+      <p class="sf-lead" id="lead">Connect your banks so your apps can see accounts, balances and transactions. Read-only, and your data stays on your box.</p>
+
+      <ol id="steps" class="sf-steps">
+        <li class="sf-step" id="s1">
+          <button type="button" class="sf-step-h"><span class="sf-n">1</span><b>Create a SimpleFIN account</b></button>
+          <div class="sf-step-b">
+            <p>SimpleFIN links to Chase, Amex, Bank of America, Capital One and thousands of other U.S. and Canadian banks. It costs <b>$15 a year</b> (or $1.50 a month), paid to SimpleFIN.</p>
+            <p>Tap <b>Get Started</b>, enter your email, then open the sign-in link they email you.</p>
+            <a class="sf-btn sf-go" href="https://beta-bridge.simplefin.org/" target="_blank" rel="noopener noreferrer">Open SimpleFIN ↗</a>
+            <button type="button" class="sf-btn" data-next="2">Done, next step</button>
+          </div>
+        </li>
+        <li class="sf-step" id="s2">
+          <button type="button" class="sf-step-h"><span class="sf-n">2</span><b>Link your banks there</b></button>
+          <div class="sf-step-b">
+            <p>In SimpleFIN, under <b>Financial Institutions</b>, tap <b>New Connection</b>, find your bank and sign in. Repeat for each bank. SimpleFIN asks you to subscribe before the first one.</p>
+            <p class="sf-small">Your bank password goes to SimpleFIN, never to this app.</p>
+            <button type="button" class="sf-btn" data-next="3">Done, next step</button>
+          </div>
+        </li>
+        <li class="sf-step" id="s3">
+          <button type="button" class="sf-step-h"><span class="sf-n">3</span><b>Create a setup token</b></button>
+          <div class="sf-step-b">
+            <p>In SimpleFIN, under <b>Apps</b>, tap <b>New Connection</b>. Name it <b>Wizard</b>, tap <b>Create Setup Token</b> and copy the long token.</p>
+            <p class="sf-small">It works once. If it gets lost, just create another.</p>
+            <button type="button" class="sf-btn" data-next="4">Done, next step</button>
+          </div>
+        </li>
+        <li class="sf-step" id="s4">
+          <button type="button" class="sf-step-h"><span class="sf-n">4</span><b>Paste the token here</b></button>
+          <div class="sf-step-b">
+            <form id="token-form" class="sf-col" autocomplete="off">
+              <textarea id="token" class="wz-input" rows="3" placeholder="aHR0cHM6Ly9…" spellcheck="false" autocapitalize="none" aria-label="SimpleFIN setup token" required></textarea>
+              <button class="sf-btn sf-go" type="submit" id="connect">Connect</button>
+            </form>
+          </div>
+        </li>
+      </ol>
+
+      <section id="connected" hidden>
+        <div class="sf-h"><h2>Your banks</h2><button type="button" class="sf-btn sf-sm" id="sync">Sync now</button></div>
+        <p id="sync-note" class="sf-small sf-note"></p>
+        <div id="err" class="sf-warn" hidden></div>
+        <div id="banks"></div>
+        <div class="sf-more">
+          <p class="sf-small">Add or remove banks in SimpleFIN under <b>Financial Institutions</b>. They show up here at the next sync.</p>
+          <a class="sf-btn" href="https://beta-bridge.simplefin.org/" target="_blank" rel="noopener noreferrer">Open SimpleFIN ↗</a>
+        </div>
+        <button type="button" class="sf-btn sf-danger" id="disconnect">Disconnect</button>
+      </section>
+    </main>
+    <p id="status" class="wz-status" role="status" aria-live="polite"></p>
+  </div>
+</body>
+</html>
