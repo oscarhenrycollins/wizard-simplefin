@@ -10,7 +10,7 @@
     "finance"
   ],
   "description": "The bank connection for your Wizard. Link your banks in your own SimpleFIN account, paste one setup token, and your apps get read-only accounts, balances and transactions. The access address and data stay inside this app.",
-  "tipi_version": 1,
+  "tipi_version": 2,
   "version": "0.1.4",
   "source": "https://github.com/oscarhenrycollins/wizard-simplefin",
   "exposable": false,
