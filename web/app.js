@@ -34,7 +34,7 @@ function render(s) {
   const on = s.status === 'connected';
   el('setup').hidden = on; el('connected').hidden = !on;
   el('connect').hidden = on; el('add').hidden = !on; el('sync').hidden = !on; el('add-hint').hidden = !on;
-  const attention = on && (!!s.error || s.banks.some((b) => b.status !== 'connected'));
+  const attention = on && (!!s.error || s.banks.some((b) => b.status !== 'connected' || b.behind));
   setPill(el('pill'), attention ? 'Needs attention' : on ? 'Connected' : 'Not connected', attention ? 'warn' : on ? 'ok' : 'off');
   renderDetails(s);
   if (!on) { showStep(step); closeSheet(); return; }
@@ -50,12 +50,12 @@ function render(s) {
   for (const b of s.banks) {
     const card = h('li', 'sf-bank');
     const t = h('div', 'wz-row sf-bank-h'), m = h('span', 'wz-main');
-    const ok = b.status === 'connected';
+    const ok = b.status === 'connected' && !b.behind;
     const tile = h('span', 'wz-tile', (b.institution || '?').trim().charAt(0).toUpperCase() || '?'); tile.setAttribute('aria-hidden', 'true');
     m.append(h('b', '', b.institution), h('small', '', plural(b.accounts.length, 'account') + (ok ? '' : ' · Needs attention in SimpleFIN')));
-    t.append(tile, m, h('span', 'wz-pill ' + (ok ? 'ok' : 'warn'), ok ? 'Connected' : 'Needs attention'));
+    t.append(tile, m, h('span', 'wz-pill ' + (ok ? 'ok' : 'warn'), ok ? 'Connected' : b.behind ? 'Out of date' : 'Needs attention'));
     card.append(t);
-    if (b.error) card.append(h('div', 'sf-warn', b.error));
+    if (b.error || b.note) card.append(h('div', 'sf-warn', b.error || b.note));
     const ul = h('ul', 'wz-list sf-accts');
     for (const a of b.accounts) {
       const li = h('li'), row = h('div', 'wz-row');
