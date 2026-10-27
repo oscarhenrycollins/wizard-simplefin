@@ -45,13 +45,15 @@ function render(s) {
   el('err').hidden = !s.error; el('err').textContent = s.error || '';
   el('bank-count').textContent = s.banks.length;
   const box = el('banks'); box.replaceChildren();
-  if (!s.banks.length && !s.syncing) box.append(h('p', 'sf-small', 'No banks yet. Link one in SimpleFIN, then tap Sync now.'));
+  if (!s.banks.length && !s.syncing) box.append(h('li', 'sf-small sf-none', 'No banks yet. Link one in SimpleFIN, then tap Sync now.'));
+  // One list row per bank at every width (connector pattern); its accounts sit under it, indented to the name.
   for (const b of s.banks) {
-    const card = h('div', 'sf-bank');
-    const t = h('div', 'sf-bank-h'), m = h('span', 'wz-main');
+    const card = h('li', 'sf-bank');
+    const t = h('div', 'wz-row sf-bank-h'), m = h('span', 'wz-main');
     const ok = b.status === 'connected';
+    const tile = h('span', 'wz-tile', (b.institution || '?').trim().charAt(0).toUpperCase() || '?'); tile.setAttribute('aria-hidden', 'true');
     m.append(h('b', '', b.institution), h('small', '', plural(b.accounts.length, 'account') + (ok ? '' : ' · Needs attention in SimpleFIN')));
-    t.append(m, h('span', 'wz-pill ' + (ok ? 'ok' : 'warn'), ok ? 'Connected' : 'Needs attention'));
+    t.append(tile, m, h('span', 'wz-pill ' + (ok ? 'ok' : 'warn'), ok ? 'Connected' : 'Needs attention'));
     card.append(t);
     if (b.error) card.append(h('div', 'sf-warn', b.error));
     const ul = h('ul', 'wz-list sf-accts');

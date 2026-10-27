@@ -35,21 +35,24 @@ button:where(.wz-button:disabled) { opacity: .45; cursor: default; }
 .sf-col { display: flex; flex-direction: column; gap: 10px; }
 .sf-col textarea { height: auto; min-height: 84px; padding: 10px 14px; border-radius: var(--r-tile); resize: vertical; font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; }
 
-/* Banks: list rows when narrow, cards when wide */
-.sf-banks { align-items: start; }
-.sf-bank { min-width: 0; padding: 4px 0 6px; }
-@container wz-app (min-width: 600px) { .sf-bank { padding: 4px 4px 6px; border-radius: var(--r); background: var(--fill); border: 1px solid var(--line); } }
-.sf-banks { gap: var(--wz-space-2) var(--wz-space-3); }
-.sf-bank-h { display: flex; align-items: center; gap: 10px; padding: 8px 8px 6px; }
-.sf-bank-h .wz-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
-.sf-bank-h b { font-size: 16px; font-weight: 700; overflow-wrap: anywhere; }
-.sf-bank-h small { font-size: 12.5px; color: var(--ink-3); }
+/* Banks: one list row per bank at every width (connector pattern, same as ChatGPT/Claude accounts). Each bank's
+ * accounts are rows under it, indented to the bank name, with balances lined up at the right. */
+.sf-bank { min-width: 0; padding: 2px 0 6px; }
+.sf-bank + .sf-bank { border-top: 1px solid var(--line); }
+.sf-banks .sf-none { padding: 8px; }
+.sf-bank-h, .sf-bank-h:hover, .sf-bank-h:active { cursor: default; background: none; }
+.sf-bank-h .wz-tile { font-weight: 700; color: var(--accent); background: var(--accent-soft); }
+.sf-bank-h .wz-main b { font-size: 16px; font-weight: 700; overflow-wrap: anywhere; }
+.sf-bank-h .wz-pill { flex: none; }
+.sf-accts { margin-left: 48px; }
+@container wz-app (max-width: 439px) { .sf-accts { margin-left: 0; } }
 .sf-accts .wz-row { min-height: 48px; padding: 6px 8px; border-radius: 0; border-top: 1px solid var(--line); }
 .sf-accts .wz-row .wz-main b { font-size: 14.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sf-accts .wz-row .wz-main small { font-size: 12px; }
 .sf-bal { flex: none; font-size: 15px; font-weight: 750; font-variant-numeric: tabular-nums; }
 .sf-warn { margin: 0; padding: 10px 12px; border-radius: var(--r-tile); font-size: 13.5px; line-height: 1.4; color: var(--ink); background: var(--fill-2); border: 1px solid var(--danger); }
-.sf-bank .sf-warn { margin: 0 8px 8px; }
+.sf-bank .sf-warn { margin: 0 8px 8px 56px; }
+@container wz-app (max-width: 439px) { .sf-bank .sf-warn { margin-left: 8px; } }
 
 .sf-details { padding: 0 8px 8px; display: grid; gap: 6px; }
 .sf-details p { margin: 0; overflow-wrap: anywhere; }
