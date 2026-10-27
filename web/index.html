@@ -7,65 +7,92 @@
   <title>SimpleFIN</title>
   <script src="boot.js"></script>
   <link rel="stylesheet" href="wizard-ui.css">
+  <link rel="stylesheet" href="wizard-layout.css">
   <link rel="stylesheet" href="styles.css">
   <script defer src="theme-client.js"></script>
   <script defer src="app.js"></script>
+  <script defer src="wizard-sheet.js"></script>
 </head>
 <body>
   <div class="wz-app sf-app">
+    <header class="wz-head"><h1>SimpleFIN</h1></header>
     <main class="wz-scroll sf-scroll">
-      <p class="sf-lead" id="lead">Connect your banks so your apps can see accounts, balances and transactions. Read-only, and your data stays on your box.</p>
+      <div class="wz-conn">
+        <span class="wz-tile sf-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10 12 4l9 6M5 10v8m4.7-8v8m4.6-8v8M19 10v8M3 20h18"/></svg></span>
+        <span class="wz-main"><b>SimpleFIN</b><small id="lead">Your apps can read accounts, balances and transactions</small></span>
+        <span id="pill" class="wz-pill off">Not connected</span>
+      </div>
 
-      <ol id="steps" class="sf-steps">
-        <li class="sf-step" id="s1">
-          <button type="button" class="sf-step-h"><span class="sf-n">1</span><b>Create a SimpleFIN account</b></button>
-          <div class="sf-step-b">
-            <p>SimpleFIN links to Chase, Amex, Bank of America, Capital One and thousands of other U.S. and Canadian banks. It costs <b>$15 a year</b> (or $1.50 a month), paid to SimpleFIN.</p>
-            <p>On SimpleFIN's site, tap <b>Get Started</b>, enter your email, then open the sign-in link they email you.</p>
-            <a class="sf-btn sf-go" href="https://beta-bridge.simplefin.org/" target="_blank" rel="noopener noreferrer">Open SimpleFIN ↗</a>
-            <button type="button" class="sf-btn" data-next="2">Done, next step</button>
-          </div>
-        </li>
-        <li class="sf-step" id="s2">
-          <button type="button" class="sf-step-h"><span class="sf-n">2</span><b>Link your banks there</b></button>
-          <div class="sf-step-b">
-            <p>In SimpleFIN, under <b>Financial Institutions</b>, tap <b>New Connection</b>, find your bank and sign in. Repeat for each bank. SimpleFIN asks you to subscribe before the first one.</p>
-            <p class="sf-small">Your bank password goes to SimpleFIN, never to this app.</p>
-            <button type="button" class="sf-btn" data-next="3">Done, next step</button>
-          </div>
-        </li>
-        <li class="sf-step" id="s3">
-          <button type="button" class="sf-step-h"><span class="sf-n">3</span><b>Create a setup token</b></button>
-          <div class="sf-step-b">
-            <p>In SimpleFIN, under <b>Apps</b>, tap <b>New Connection</b>. Name it <b>Wizard</b>, tap <b>Create Setup Token</b> and copy the long token.</p>
-            <p class="sf-small">It works once. If it gets lost, just create another.</p>
-            <button type="button" class="sf-btn" data-next="4">Done, next step</button>
-          </div>
-        </li>
-        <li class="sf-step" id="s4">
-          <button type="button" class="sf-step-h"><span class="sf-n">4</span><b>Paste the token here</b></button>
-          <div class="sf-step-b">
-            <form id="token-form" class="sf-col" autocomplete="off">
-              <textarea id="token" class="wz-input" rows="3" placeholder="aHR0cHM6Ly9…" spellcheck="false" autocapitalize="none" aria-label="SimpleFIN setup token" required></textarea>
-              <button class="sf-btn sf-go" type="submit" id="connect">Connect</button>
-            </form>
-          </div>
-        </li>
-      </ol>
-
-      <section id="connected" hidden>
-        <div class="sf-h"><h2>Your banks</h2><button type="button" class="sf-btn sf-sm" id="sync">Sync now</button></div>
-        <p id="sync-note" class="sf-small sf-note"></p>
-        <div id="err" class="sf-warn" hidden></div>
-        <div id="banks"></div>
-        <div class="sf-more">
-          <p class="sf-small">Add or remove banks in SimpleFIN under <b>Financial Institutions</b>. They show up here at the next sync.</p>
-          <a class="sf-btn" href="https://beta-bridge.simplefin.org/" target="_blank" rel="noopener noreferrer">Open SimpleFIN ↗</a>
-        </div>
-        <button type="button" class="sf-btn sf-danger" id="disconnect">Disconnect</button>
+      <section id="setup" class="wz-sec">
+        <h2 class="wz-sec-h">Set up <span class="wz-count">4 steps</span></h2>
+        <ol id="steps" class="sf-steps">
+          <li class="sf-step" id="s1">
+            <button type="button" class="wz-row sf-step-h"><span class="sf-n">1</span><span class="wz-main"><b>Create a SimpleFIN account</b></span></button>
+            <div class="sf-step-b">
+              <p>SimpleFIN links to Chase, Amex, Bank of America, Capital One and thousands of other U.S. and Canadian banks. It costs <b>$15 a year</b> (or $1.50 a month), paid to SimpleFIN.</p>
+              <p>On SimpleFIN's site, tap <b>Get Started</b>, enter your email, then open the sign-in link they email you.</p>
+              <div class="sf-row-btns"><a class="wz-button secondary" href="https://beta-bridge.simplefin.org/" target="_blank" rel="noopener noreferrer">Open SimpleFIN ↗</a>
+              <button type="button" class="wz-button secondary" data-next="2">Done, next step</button></div>
+            </div>
+          </li>
+          <li class="sf-step" id="s2">
+            <button type="button" class="wz-row sf-step-h"><span class="sf-n">2</span><span class="wz-main"><b>Link your banks there</b></span></button>
+            <div class="sf-step-b">
+              <p>In SimpleFIN, under <b>Financial Institutions</b>, tap <b>New Connection</b>, find your bank and sign in. Repeat for each bank. SimpleFIN asks you to subscribe before the first one.</p>
+              <p class="sf-small">Your bank password goes to SimpleFIN, never to this app.</p>
+              <div class="sf-row-btns"><button type="button" class="wz-button secondary" data-next="3">Done, next step</button></div>
+            </div>
+          </li>
+          <li class="sf-step" id="s3">
+            <button type="button" class="wz-row sf-step-h"><span class="sf-n">3</span><span class="wz-main"><b>Create a setup token</b></span></button>
+            <div class="sf-step-b">
+              <p>In SimpleFIN, under <b>Apps</b>, tap <b>New Connection</b>. Name it <b>Wizard</b>, tap <b>Create Setup Token</b> and copy the long token.</p>
+              <p class="sf-small">It works once. If it gets lost, just create another.</p>
+              <div class="sf-row-btns"><button type="button" class="wz-button secondary" data-next="4">Done, next step</button></div>
+            </div>
+          </li>
+          <li class="sf-step" id="s4">
+            <button type="button" class="wz-row sf-step-h"><span class="sf-n">4</span><span class="wz-main"><b>Paste the token here, then Connect</b></span></button>
+            <div class="sf-step-b">
+              <form id="token-form" class="sf-col" autocomplete="off">
+                <textarea id="token" class="wz-input" rows="3" placeholder="aHR0cHM6Ly9…" spellcheck="false" autocapitalize="none" aria-label="SimpleFIN setup token" required></textarea>
+              </form>
+            </div>
+          </li>
+        </ol>
       </section>
+
+      <div id="connected" hidden>
+        <div id="err" class="sf-warn" hidden></div>
+        <section class="wz-sec">
+          <h2 class="wz-sec-h">Accounts <span class="wz-count">1</span></h2>
+          <ul class="wz-list"><li><button type="button" class="wz-row" id="conn-row">
+            <span class="wz-tile sf-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10 12 4l9 6M5 10v8m4.7-8v8m4.6-8v8M19 10v8M3 20h18"/></svg></span>
+            <span class="wz-main"><b>SimpleFIN connection</b><small id="sync-note"></small></span>
+            <span id="conn-pill" class="wz-pill ok">Active</span></button></li></ul>
+        </section>
+        <section class="wz-sec">
+          <h2 class="wz-sec-h">Banks <span class="wz-count" id="bank-count">0</span></h2>
+          <div id="banks" class="wz-grid sf-banks"></div>
+        </section>
+      </div>
+
+      <div class="wz-actions">
+        <button class="wz-button" type="submit" form="token-form" id="connect">Connect</button>
+        <a class="wz-button" id="add" href="https://beta-bridge.simplefin.org/" target="_blank" rel="noopener noreferrer" hidden>Add account</a>
+        <button type="button" class="wz-button secondary" id="sync" hidden>Sync now</button>
+      </div>
+      <p id="add-hint" class="sf-small sf-hint" hidden>Add or remove banks in SimpleFIN under <b>Financial Institutions</b>. They show up here at the next sync.</p>
+
+      <details class="wz-more"><summary>Details</summary><div id="details" class="sf-details">
+        <p>Read-only. Your bank passwords go to SimpleFIN, never to this app. Synced data stays in this app's own folder on your box.</p>
+      </div></details>
     </main>
     <p id="status" class="wz-status" role="status" aria-live="polite"></p>
   </div>
+  <dialog id="conn-sheet" class="wz-sheet" aria-labelledby="conn-sheet-h">
+    <h2 id="conn-sheet-h">SimpleFIN connection</h2>
+    <div id="conn-sheet-body"></div>
+  </dialog>
 </body>
 </html>

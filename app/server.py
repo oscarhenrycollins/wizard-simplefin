@@ -25,7 +25,7 @@ from urllib.parse import parse_qs, quote, unquote, urlsplit
 ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get('DATA_DIR', ROOT / '.data'))
 APP_ID = 'wizard-simplefin'
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 PREFIX = '/' + APP_ID
 PORT = os.environ.get('PORT', '8808')
 SYNC_HOURS = float(os.environ.get('SIMPLEFIN_SYNC_HOURS', '6'))
