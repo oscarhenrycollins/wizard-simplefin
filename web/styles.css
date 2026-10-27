@@ -1,46 +1,58 @@
-/* SimpleFIN. Solid surfaces so everything reads on any wallpaper; colours come from the skin. */
-.sf-app { --base: #121019; --solid: color-mix(in srgb, var(--ink) 9%, var(--base)); --solid-2: color-mix(in srgb, var(--ink) 16%, var(--base)); --green: #5fd39a; --amber: #f2b45a; --red: #ff7a7a; }
-html[data-color-scheme="light"] .sf-app { --base: #f7f6fb; --green: #18834f; --amber: #a86400; --red: #c0392b; }
-.sf-scroll { padding: calc(var(--wos-cutout, 0px) + 14px) 12px 28px; }
-.sf-lead { margin: 0 4px 14px; font-size: 14.5px; line-height: 1.45; color: var(--ink-2); }
-.sf-lead[hidden], .sf-steps[hidden], #connected[hidden], .sf-warn[hidden] { display: none; }
-.sf-small { margin: 0; font-size: 13px; color: var(--ink-3); line-height: 1.4; }
+/* SimpleFIN: connector pattern (wizard-os style/APP-DESIGN-RULES.md rule 5). Layout comes from wizard-layout.css;
+ * this file only places SimpleFIN's own pieces. Kit variables only. */
+[hidden] { display: none !important; }
+/* A bare tab has only the vendored kit; inside the shell wizard-tokens.css defines these and wins (:where has no weight). */
+:where(:root) { --wz-space-2: 8px; --wz-space-3: 12px; --wz-space-4: 16px; --wz-overlay: var(--wz-surface-raised); --wz-base: var(--wz-canvas); }
+/* Same values as the live kit's .wz-button for a bare tab (the vendored kit predates it). Element-weight selectors:
+ * they beat the vendored button reset, and the live kit's .wz-button wins over them inside the shell. */
+button:where(.wz-button), a:where(.wz-button) { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 8px 16px; border-radius: var(--r-tile); background: var(--accent); color: var(--on-accent); font-weight: 600; text-decoration: none; }
+button:where(.wz-button.secondary), a:where(.wz-button.secondary) { background: var(--fill); color: var(--ink); border: 1px solid var(--line-2); }
+button:where(.wz-button:disabled) { opacity: .45; cursor: default; }
 
-.sf-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.sf-step { border-radius: 16px; background: var(--solid); border: 1.5px solid transparent; }
+.sf-scroll { padding-top: 12px; padding-bottom: 32px; display: flex; flex-direction: column; gap: var(--wz-space-3); }
+.wz-sec + .wz-sec { border-top: 0; }
+.sf-mark { background: var(--accent-soft); }
+.sf-mark svg { width: 24px; height: 24px; fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.wz-conn .sf-mark { width: 48px; height: 48px; }
+.wz-conn .sf-mark svg { width: 28px; height: 28px; }
+.sf-small { margin: 0; font-size: 13px; color: var(--ink-3); line-height: 1.4; }
+.sf-hint { margin-top: -4px; }
+.wz-row .wz-pill { flex: none; }
+
+/* Setup guide: one step open at a time */
+.sf-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--wz-space-2); }
+.sf-step { border-radius: var(--r); background: var(--fill); border: 1px solid transparent; }
 .sf-step.is-now { border-color: var(--accent); }
-.sf-step-h { display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px; font: inherit; font-size: 15.5px; color: var(--ink); background: none; border: 0; text-align: left; cursor: pointer; }
-.sf-n { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-size: 14px; font-weight: 800; background: var(--solid-2); color: var(--ink-2); }
+.sf-n { flex: none; width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; font-size: 14px; font-weight: 800; background: var(--fill-2); color: var(--ink-2); }
 .is-now .sf-n { background: var(--accent); color: var(--on-accent); }
-.is-done .sf-n { background: var(--green); color: #0c2a1b; font-size: 0; }
+.is-done .sf-n { background: var(--accent-soft); color: var(--accent); font-size: 0; }
 .is-done .sf-n::after { content: "✓"; font-size: 15px; }
-.sf-step:not(.is-now):not(.is-done) .sf-step-h { color: var(--ink-2); }
-.sf-step-b { display: none; flex-direction: column; gap: 10px; padding: 0 14px 16px 54px; }
+.sf-step:not(.is-now):not(.is-done) .sf-step-h b { color: var(--ink-2); }
+.sf-step-b { display: none; flex-direction: column; gap: 10px; padding: 0 14px 16px 48px; }
 .is-now .sf-step-b { display: flex; }
 .sf-step-b p { margin: 0; font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+.sf-row-btns { display: flex; flex-wrap: wrap; gap: var(--wz-space-2); }
 .sf-col { display: flex; flex-direction: column; gap: 10px; }
-.sf-col textarea { min-height: 84px; resize: vertical; font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--solid-2); word-break: break-all; }
+.sf-col textarea { height: auto; min-height: 84px; padding: 10px 14px; border-radius: var(--r-tile); resize: vertical; font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; }
 
-.sf-btn { align-self: flex-start; min-height: 42px; padding: 0 16px; border-radius: 99px; border: 0; font: inherit; font-size: 14.5px; font-weight: 700; color: var(--ink); background: var(--solid-2); box-shadow: inset 0 0 0 1.5px var(--line-2); cursor: pointer; display: inline-flex; align-items: center; text-decoration: none; }
-.sf-go { color: var(--on-accent); background: var(--accent); box-shadow: none; }
-.sf-sm { min-height: 34px; padding: 0 12px; font-size: 13px; }
-.sf-btn:disabled { opacity: .5; }
-.sf-danger { margin-top: 18px; color: var(--red); }
-
-.sf-h { display: flex; align-items: center; justify-content: space-between; margin: 0 4px 2px; }
-.sf-h h2 { margin: 0; font-size: 17px; font-weight: 800; }
-.sf-note { margin: 0 4px 10px; }
-.sf-empty { padding: 14px; border-radius: 16px; background: var(--solid); }
-.sf-bank { margin-bottom: 8px; padding: 6px 4px 8px; border-radius: 16px; background: var(--solid); }
-.sf-bank-h { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; }
-.sf-bank-h b { font-size: 16px; font-weight: 750; }
+/* Banks: list rows when narrow, cards when wide */
+.sf-banks { align-items: start; }
+.sf-bank { min-width: 0; padding: 4px 0 6px; }
+@container wz-app (min-width: 600px) { .sf-bank { padding: 4px 4px 6px; border-radius: var(--r); background: var(--fill); border: 1px solid var(--line); } }
+.sf-banks { gap: var(--wz-space-2) var(--wz-space-3); }
+.sf-bank-h { display: flex; align-items: center; gap: 10px; padding: 8px 8px 6px; }
+.sf-bank-h .wz-main { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.sf-bank-h b { font-size: 16px; font-weight: 700; overflow-wrap: anywhere; }
 .sf-bank-h small { font-size: 12.5px; color: var(--ink-3); }
-.sf-warn { margin: 0 8px 8px; padding: 10px 12px; border-radius: 12px; font-size: 13.5px; line-height: 1.4; color: var(--ink); background: color-mix(in srgb, var(--amber) 22%, var(--base)); }
-#err.sf-warn { margin: 0 0 10px; }
-.sf-accts { list-style: none; margin: 0; padding: 0 6px; }
-.sf-accts li { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 6px; border-top: 1px solid var(--line); }
-.sf-acct-n { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-.sf-acct-n b { font-size: 14.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sf-acct-n small { font-size: 12px; color: var(--ink-3); }
+.sf-accts .wz-row { min-height: 48px; padding: 6px 8px; border-radius: 0; border-top: 1px solid var(--line); }
+.sf-accts .wz-row .wz-main b { font-size: 14.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sf-accts .wz-row .wz-main small { font-size: 12px; }
 .sf-bal { flex: none; font-size: 15px; font-weight: 750; font-variant-numeric: tabular-nums; }
-.sf-more { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding: 14px; border-radius: 16px; background: var(--solid); }
+.sf-warn { margin: 0; padding: 10px 12px; border-radius: var(--r-tile); font-size: 13.5px; line-height: 1.4; color: var(--ink); background: var(--fill-2); border: 1px solid var(--danger); }
+.sf-bank .sf-warn { margin: 0 8px 8px; }
+
+.sf-details { padding: 0 8px 8px; display: grid; gap: 6px; }
+.sf-details p { margin: 0; overflow-wrap: anywhere; }
+.sf-sheet-note { margin: 0 0 var(--wz-space-3); color: var(--ink-2); font-size: 14px; line-height: 1.45; }
+.wz-sheet .wz-actions .wz-button { flex: 1 1 140px; }
+.sf-danger { color: var(--danger) !important; }
