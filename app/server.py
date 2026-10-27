@@ -25,10 +25,13 @@ from urllib.parse import parse_qs, quote, unquote, urlsplit
 ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get('DATA_DIR', ROOT / '.data'))
 APP_ID = 'wizard-simplefin'
-VERSION = '0.1.6'
+VERSION = '0.1.7'
 PREFIX = '/' + APP_ID
 PORT = os.environ.get('PORT', '8808')
 SYNC_HOURS = float(os.environ.get('SIMPLEFIN_SYNC_HOURS', '6'))
+# A bank whose newest balance is older than this many days is reported as behind: SimpleFIN often stops
+# getting data from a bank without reporting an error, so the date is the only reliable signal.
+STALE_DAYS = int(os.environ.get('SIMPLEFIN_STALE_DAYS', '2'))
 WINDOW_DAYS = 44  # SimpleFIN caps a request at 90 days and recommends at most 45
 HISTORY_WINDOWS = int(os.environ.get('SIMPLEFIN_HISTORY_WINDOWS', '8'))  # x 45 days on first sync (about a year)
 DAILY_LIMIT = 16  # SimpleFIN expects <= 24 requests a day and disables tokens that keep exceeding it
@@ -340,8 +343,22 @@ def status():
             n = c.execute('SELECT COUNT(*) FROM transactions').fetchone()[0]
         finally:
             c.close()
-    banks = [{'id': cn['id'], 'institution': cn['org'] or cn['name'], 'status': 'needs_login' if cn['error'] else 'connected',
-              'error': cn['error'], 'accounts': [a for a in accts if a['conn'] == cn['id']]} for cn in conns]
+    today = dt.datetime.now(dt.timezone.utc).date()
+    banks = []
+    for cn in conns:
+        mine = [a for a in accts if a['conn'] == cn['id']]
+        as_of = max((a['balance_at'] for a in mine if a['balance_at']), default=None)
+        try:
+            days = (today - dt.date.fromisoformat(as_of[:10])).days if as_of else None
+        except ValueError:
+            days = None
+        behind = bool(days is not None and days > STALE_DAYS and not cn['error'])
+        inst = cn['org'] or cn['name']
+        banks.append({'id': cn['id'], 'institution': inst, 'status': 'needs_login' if cn['error'] else 'connected',
+                      'error': cn['error'], 'as_of': as_of, 'behind': behind,
+                      'note': (f'No new data from {inst} since {as_of} ({days} days) and SimpleFIN reports no error. '
+                               f'Reconnect {inst} on SimpleFIN under Financial Institutions.') if behind else None,
+                      'accounts': mine})
     connected = bool(_access())
     return {
         'contract': 'wizard.bank-connection/1', 'provider': 'simplefin', 'name': 'SimpleFIN',
@@ -391,7 +408,7 @@ def transactions(args):
 
 
 TOOLS = [
-    {'name': 'bank_status', 'description': 'SimpleFIN bank connection status: linked banks, their accounts, last sync and any bank SimpleFIN says needs attention. Never returns credentials. To set up, the owner opens the SimpleFIN app (/wizard-simplefin/); never ask for the setup token in chat.',
+    {'name': 'bank_status', 'description': 'SimpleFIN bank connection status: linked banks, their accounts, last sync, any bank SimpleFIN says needs attention, and any bank that is behind (behind=true, as_of = newest balance date; SimpleFIN stopped getting its data without an error, so the owner must reconnect it on SimpleFIN). Never returns credentials. To set up, the owner opens the SimpleFIN app (/wizard-simplefin/); never ask for the setup token in chat.',
      'inputSchema': {'type': 'object', 'properties': {}, 'additionalProperties': False}, 'annotations': {'readOnlyHint': True}},
     {'name': 'bank_accounts', 'description': 'All linked bank and card accounts with institution, name, last digits when the name shows them, and current balance (negative on cards = owed).',
      'inputSchema': {'type': 'object', 'properties': {}, 'additionalProperties': False}, 'annotations': {'readOnlyHint': True}},
